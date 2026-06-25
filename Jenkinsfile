@@ -1,5 +1,74 @@
-pipeline {
+// pipeline {
 
+//     agent any
+
+//     tools {
+//         nodejs 'Node18'
+//     }
+
+//     stages {
+
+//         stage('Checkout') {
+//             steps {
+//                 git branch: 'main',
+//                 url: 'https://github.com/Jayynemade/react-node-demo'
+//             }
+//         }
+
+//         stage('Install Backend Dependencies') {
+//             steps {
+//                 dir('backend') {
+//                     sh 'npm install'
+//                 }
+//             }
+//         }
+
+//         stage('Install Frontend Dependencies') {
+//             steps {
+//                 dir('frontend') {
+//                     sh 'npm install'
+//                 }
+//             }
+//         }
+
+//         stage('Build Frontend') {
+//             steps {
+//                 dir('frontend') {
+//                     sh 'npm run build'
+//                 }
+//             }
+//         }
+
+//         stage('Backend Test') {
+//             steps {
+//                 dir('backend') {
+//                     sh 'echo Backend Tests Passed'
+//                 }
+//             }
+//         }
+
+//         stage('Frontend Test') {
+//             steps {
+//                 dir('frontend') {
+//                     sh 'echo Frontend Tests Passed'
+//                 }
+//             }
+//         }
+//     }
+
+//     post {
+
+//         success {
+//             echo 'Pipeline Successful'
+//         }
+
+//         failure {
+//             echo 'Pipeline Failed'
+//         }
+//     }
+// }
+
+pipeline {
     agent any
 
     tools {
@@ -15,55 +84,43 @@ pipeline {
             }
         }
 
-        stage('Install Backend Dependencies') {
+        stage('Install Dependencies') {
             steps {
-                dir('backend') {
-                    sh 'npm install'
-                }
-            }
-        }
-
-        stage('Install Frontend Dependencies') {
-            steps {
-                dir('frontend') {
-                    sh 'npm install'
-                }
+                sh '''
+                    cd backend && npm install
+                    cd ../frontend && npm install
+                '''
             }
         }
 
         stage('Build Frontend') {
             steps {
-                dir('frontend') {
-                    sh 'npm run build'
-                }
+                sh 'cd frontend && npm run build'
             }
         }
 
-        stage('Backend Test') {
+        stage('Build Docker Images') {
             steps {
-                dir('backend') {
-                    sh 'echo Backend Tests Passed'
-                }
+                sh 'docker-compose build'
             }
         }
 
-        stage('Frontend Test') {
+        stage('Deploy') {
             steps {
-                dir('frontend') {
-                    sh 'echo Frontend Tests Passed'
-                }
+                sh '''
+                    docker-compose down || true
+                    docker-compose up -d
+                '''
             }
         }
     }
 
     post {
-
         success {
-            echo 'Pipeline Successful'
+            echo 'Docker Deployment Successful 🚀'
         }
-
         failure {
-            echo 'Pipeline Failed'
+            echo 'Deployment Failed ❌'
         }
     }
 }
