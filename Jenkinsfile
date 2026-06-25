@@ -11,7 +11,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                url: 'https://github.com/Jayynemade/react-node-demo.git'
+                url: 'https://github.com/Jayynemade/react-node-demo'
             }
         }
 
