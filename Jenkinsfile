@@ -137,15 +137,18 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                url: 'https://github.com/Jayynemade/react-node-demo'
+                    url: 'https://github.com/Jayynemade/react-node-demo'
             }
         }
 
         stage('Install Dependencies') {
             steps {
                 sh '''
-                    cd backend && npm install
-                    cd ../frontend && npm install
+                    cd backend
+                    npm install
+
+                    cd ../frontend
+                    npm install
                 '''
             }
         }
@@ -163,20 +166,25 @@ pipeline {
             steps {
                 sh '''
                     cd frontend
-                    npm test -- --watchAll=false
+                    npm test
                 '''
             }
         }
 
         stage('Build Frontend') {
             steps {
-                sh 'cd frontend && npm run build'
+                sh '''
+                    cd frontend
+                    npm run build
+                '''
             }
         }
 
         stage('Build Docker Images') {
             steps {
-                sh 'docker compose build'
+                sh '''
+                    docker compose build
+                '''
             }
         }
 
@@ -191,18 +199,16 @@ pipeline {
     }
 
     post {
-
-        always {
-            junit allowEmptyResults: true,
-                  testResults: 'backend/test-results/junit.xml, frontend/test-results/junit.xml'
-        }
-
         success {
             echo 'Docker Deployment Successful 🚀'
         }
 
         failure {
             echo 'Deployment Failed ❌'
+        }
+
+        always {
+            cleanWs()
         }
     }
 }
