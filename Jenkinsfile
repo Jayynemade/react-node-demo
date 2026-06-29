@@ -13,26 +13,19 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
-            steps {
-                git branch: 'main',
-                    url: 'https://github.com/Jayynemade/react-node-demo'
-            }
-        }
-
         stage('Install Dependencies') {
             parallel {
                 stage('Backend Dependencies') {
                     steps {
                         dir('backend') {
-                            sh 'npm ci'
+                            sh 'npm install --no-audit --no-fund'
                         }
                     }
                 }
                 stage('Frontend Dependencies') {
                     steps {
                         dir('frontend') {
-                            sh 'npm ci'
+                            sh 'npm install --no-audit --no-fund'
                         }
                     }
                 }
