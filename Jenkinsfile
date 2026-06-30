@@ -74,11 +74,6 @@ pipeline {
         }
 
         stage('Deploy') {
-           when{
-            expression{
-                env.BRANCH_NAME == 'main'
-            }
-           }
             steps {
                 sh '''
                     docker compose down || true
